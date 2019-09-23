@@ -80,7 +80,7 @@ def send_multiple(sender, password, email_list, subject, message, file_location=
 if __name__ == "__main__":
 
     ## initialize
-    file_location = 'Test'
+    file_location = 'Test.rtf'
     user_host = 'localhost'
     user_login = 'root'
     password = 'razzmatazz'
