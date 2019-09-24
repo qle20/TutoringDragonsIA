@@ -1,27 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="066198e0-c658-4f71-a9e9-2861b83a98ee" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Main.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Algorithms/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Algorithms/.idea/codeStyles/Project.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Algorithms/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Algorithms/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Algorithms/Email.py" beforeDir="false" afterPath="$PROJECT_DIR$/Algorithms/Email.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysite/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysite/manage.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysite/mysite/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysite/mysite/settings.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysite/mysite/urls.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysite/mysite/wsgi.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysite/polls/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysite/polls/admin.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysite/polls/apps.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysite/polls/migrations/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysite/polls/models.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysite/polls/tests.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysite/polls/urls.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysite/polls/views.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/quickstart.py" beforeDir="false" />
-    </list>
+    <list default="true" id="066198e0-c658-4f71-a9e9-2861b83a98ee" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,8 +27,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Main.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="15">
-              <caret line="1" column="120" lean-forward="true" selection-start-line="1" selection-start-column="120" selection-end-line="1" selection-end-column="120" />
+            <state relative-caret-position="30">
+              <caret line="2" column="18" selection-start-line="2" selection-start-column="18" selection-end-line="2" selection-end-column="18" />
             </state>
           </provider>
         </entry>
@@ -207,12 +187,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1569288431875</updated>
-      <workItem from="1569288433474" duration="2441000" />
+      <workItem from="1569288433474" duration="2742000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2441000" />
+    <option name="totallyTimeSpent" value="2742000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -229,7 +209,7 @@
     <layout>
       <window_info id="DB Browser" />
       <window_info id="Favorites" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24964234" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24964234" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="DB Execution Console" />
       <window_info anchor="bottom" id="Docker" show_stripe_button="false" />
@@ -240,7 +220,7 @@
       <window_info anchor="bottom" id="Event Log" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.3298153" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.3298153" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -290,8 +270,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Main.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="120" lean-forward="true" selection-start-line="1" selection-start-column="120" selection-end-line="1" selection-end-column="120" />
+        <state relative-caret-position="30">
+          <caret line="2" column="18" selection-start-line="2" selection-start-column="18" selection-end-line="2" selection-end-column="18" />
         </state>
       </provider>
     </entry>
