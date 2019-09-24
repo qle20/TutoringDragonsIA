@@ -1,11 +1,20 @@
 
+## Standard Library Immports
 import os
-import smtplib
-import Connector as cn
+import sys
+
+## Third party imports
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
+import smtplib
+
+## Local application imports
+
+sys.path.append("Imported")
+import Connector as cn
+
 
 def send_email(sender, password, send_to, message, error_list=''):
     '''
@@ -35,8 +44,7 @@ def make_single_email(sender, password, send_to, subject, msg):
 
 def send_attachment(file_location, sender, password, send_to, subject, message):
     '''
-    FIX THIS SHIT
-    STOLEN OF SOME GUY
+    Low Key stole from some guy
     '''
     msg = MIMEMultipart()
     msg['From'] = sender
