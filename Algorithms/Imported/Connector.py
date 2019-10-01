@@ -25,7 +25,7 @@ def get_data(cursor, select):
 
     return data
 
-def get_value_list(cursor, table, index):
+def get_value_list(cursor, table, index=None):
     '''
     This function collects a certain value in a specified table, in wchi returns it as a list.
     :param cursor:
@@ -33,28 +33,68 @@ def get_value_list(cursor, table, index):
     :param index:
     :return:
     '''
+
     cursor.execute("SELECT * FROM " + table)
     db_list = cursor.fetchall()
 
-    value_list = []
+    if index != None:
 
-    for i in db_list:
-        value_list.append(i[index])
+        value_list = []
 
-    return value_list
+        for i in db_list:
+            value_list.append(i[index])
 
-def add_value(cursor, ):
-    ""
+        return value_list
+    return(db_list)
+
+def add_value(conn, cursor, table, values):
+    """
+    Insert values into table, with the values inserted being arrays
+    """
+
+    sql = "INSERT INTO " + table + " VALUES(" + SPACE_HOLDER*(len(values) - 1 ) + "%s" + ")"
+
+    cursor.execute(sql, values)
+    conn.commit()
+
+def delete_value(conn, cursor, table, coloum, condition=''):
+    """
+    Delete Stuff
+    :param conn:
+    :param cursor:
+    :param table:
+    :param coloum:
+    :param where:
+    :return:
+    """
+    sql = "DELETE FROM " + table + " WHERE " + coloum + '="' + condition +'"'
+    print(sql)
+    cursor.execute(sql)
+    conn.commit()
 
 if __name__ == '__main__':
 
+    SPACE_HOLDER = "%s,"
     user_host = 'localhost'
     user_login = 'root'
     password = 'razzmatazz'
     schema = 'Test_schema'
 
     connection, curr = connect(user_host, user_login, password, schema)
+    #
+    #
+    # sql = "INSERT INTO Tutor (TutorID, Email, Name) VALUES(" + SPACE_HOLDER * 2 +"%s" +")"
+    # print(sql)
+    # val = ('T5', "dsdf", "Yong wan")
+    # curr.execute(sql, val)
+    # connection.commit()
+    #
+    #
+    # get_value_list(curr, "Tutor",  1)
+    #
+    # end_connection(connection)
 
-    get_value_list(curr, "Tutor",  1)
+    add_value(connection, curr, "Tutor", values = ('T6', "dsdf", "Yong wan"))
+    print(get_value_list(curr, "Tutor"))
+    delete_value(connection, curr, "Tutor", "TutorID", "T6")
 
-    end_connection(connection)

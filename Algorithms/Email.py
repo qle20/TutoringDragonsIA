@@ -31,9 +31,10 @@ def send_email(sender, password, send_to, message, error_list=''):
             server.quit()
     except:
         error_list.append(send_to)
+
         return error_list
 
-def make_single_email(sender, password, send_to, subject, msg):
+def make_single_email(sender, password, send_to, subject, msg, error_list = 'NO LIST'):
     '''
     Make message, where the subject, the message  has to be parsed.
     :return: The message as a string.
@@ -42,7 +43,9 @@ def make_single_email(sender, password, send_to, subject, msg):
 
     send_email(sender, password, send_to, message )
 
-def send_attachment(file_location, sender, password, send_to, subject, message):
+    return error_list
+
+def send_attachment(file_location, sender, password, send_to, subject, message, error_list = 'NO LIST'):
     '''
     Low Key stole from some guy
     '''
@@ -66,6 +69,8 @@ def send_attachment(file_location, sender, password, send_to, subject, message):
 
     send_email(sender, password, send_to, text)
 
+    return error_list
+
 def send_multiple(sender, password, email_list, subject, message, file_location=None):
     '''
     :param sender:
@@ -76,6 +81,9 @@ def send_multiple(sender, password, email_list, subject, message, file_location=
     :param file_location:
     :return:
     '''
+
+    error_list = []
+
     if file_location == None:
         for email in email_list:
             make_single_email(sender, password, email, subject, )
@@ -83,6 +91,8 @@ def send_multiple(sender, password, email_list, subject, message, file_location=
     else:
         for email in email_list:
             send_attachment(file_location, sender, password, email, subject, message)
+
+
 
 
 if __name__ == "__main__":
@@ -104,4 +114,4 @@ if __name__ == "__main__":
     ## Accessing database for emails to send to people
     connection, curr = cn.connect(user_host, user_login, password, schema)
     email_list = cn.get_value_list(curr, "Tutor", 1)
-    send_multiple(email_address, email_pass, email_list, subject, message, file_location)
+    error = send_multiple(email_address, email_pass, email_list, subject, message, file_location)
