@@ -2,3 +2,20 @@
 <meta name="google-signin-client_id" content="445860273357-1hf8ovuhpqnsai1504mf1uvm0567s6h2.apps.googleusercontent.com">
 <div class="g-signin2" data-onsuccess="onSignIn"></div>
 
+<script>
+     $(document).on("submit", '#email_form', function(e) {
+        $.ajax({
+            type: 'POST',
+            url: '/send_email/',
+            data: data,
+            processData: false,
+            contentType: false,
+            beforeSend: function () {
+
+            },
+            success: function (rs) {
+            }
+        });
+
+     })
+</script>

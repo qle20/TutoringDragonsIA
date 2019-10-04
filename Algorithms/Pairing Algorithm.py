@@ -109,7 +109,9 @@ if __name__ == "__main__":
     pairing = compatibility((tutor_freetime), (student_freetime))
 
     add_data(conn, curr, "Matching", pairing)
+
     print(cn.get_value_list(curr, "Matching"))
+
 
     # curr.execute("Delete from matching")
     # conn.commit()
@@ -118,5 +120,5 @@ if __name__ == "__main__":
 If you are presenting on a different platform, it must be one application
 Shw database on school server
 Succes Crit = script
-
+Make Slider
 '''
