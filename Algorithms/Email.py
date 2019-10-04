@@ -92,9 +92,6 @@ def send_multiple(sender, password, email_list, subject, message, file_location=
         for email in email_list:
             send_attachment(file_location, sender, password, email, subject, message)
 
-
-
-
 if __name__ == "__main__":
 
     ## initialize

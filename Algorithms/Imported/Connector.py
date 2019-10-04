@@ -18,16 +18,9 @@ def end_connection(connection):
 
     connection.close()
 
-def get_data(cursor, select):
-
-    cursor.execute("SELECT " + select)
-    data = curr.fetchall()
-
-    return data
-
 def get_value_list(cursor, table, index=None):
     '''
-    This function collects a certain value in a specified table, in wchi returns it as a list.
+    This function collects a certain value in a specified table, returns it as a list.
     :param cursor:
     :param table:
     :param index:
@@ -38,7 +31,6 @@ def get_value_list(cursor, table, index=None):
     db_list = cursor.fetchall()
 
     if index != None:
-
         value_list = []
 
         for i in db_list:
@@ -47,17 +39,19 @@ def get_value_list(cursor, table, index=None):
         return value_list
     return(db_list)
 
+
 def add_value(conn, cursor, table, values):
     """
     Insert values into table, with the values inserted being arrays
     """
 
+    SPACE_HOLDER = "%s,"
     sql = "INSERT INTO " + table + " VALUES(" + SPACE_HOLDER*(len(values) - 1 ) + "%s" + ")"
 
     cursor.execute(sql, values)
     conn.commit()
 
-def delete_value(conn, cursor, table, coloum, condition=''):
+def delete_value(conn, cursor, table, column='', condition=''):
     """
     Delete Stuff
     :param conn:
@@ -67,14 +61,14 @@ def delete_value(conn, cursor, table, coloum, condition=''):
     :param where:
     :return:
     """
-    sql = "DELETE FROM " + table + " WHERE " + coloum + '="' + condition +'"'
-    print(sql)
+
+    sql = "DELETE FROM " + table + " WHERE " + column + '="' + condition +'"'
+
     cursor.execute(sql)
     conn.commit()
 
 if __name__ == '__main__':
 
-    SPACE_HOLDER = "%s,"
     user_host = 'localhost'
     user_login = 'root'
     password = 'razzmatazz'
@@ -94,7 +88,11 @@ if __name__ == '__main__':
     #
     # end_connection(connection)
 
-    add_value(connection, curr, "Tutor", values = ('T6', "dsdf", "Yong wan"))
-    print(get_value_list(curr, "Tutor"))
-    delete_value(connection, curr, "Tutor", "TutorID", "T6")
+    # add_value(connection, curr, "Tutor", values = ('T6', "dsdf", "Yong wan"))
+    # print(get_value_list(curr, "Tutor"))
+    # delete_value(connection, curr, "Tutor", "TutorID", "T6")
+    # print(get_value_list(curr, "Tutor"))
 
+    print(select_certain_value(curr, "AnswerTutor", "Answers", "Friday"))
+
+    end_connection(connection)
