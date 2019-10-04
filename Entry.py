@@ -4,7 +4,7 @@ def index(request):
     submitbutton = request.POST.get('Submit')
 
     if submitbutton:
-        print("Hello")
+
 
     context = {'submitbutton': submitbutton}
 
