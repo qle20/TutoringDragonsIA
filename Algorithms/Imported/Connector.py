@@ -9,13 +9,24 @@ def connect(user_host, user_login, password, db):
     :param db:
     :return:
     '''
-    connection = mysql.connector.connect(host=user_host, user=user_login, passwd=password, database=db)
-    curr = connection.cursor()
+    try:
+        connection = mysql.connector.connect(
+            host=str(user_host),
+            user=str(user_login),
+            passwd=str(password),
+            database=str(db)
+        )
+        curr = connection.cursor()
+        return connection, curr
 
-    return connection, curr
+    except mysql.connector.Error as err:
+        print("Stuff went south: {}".format(err))
 
 def end_connection(connection):
-
+    '''
+    :param connection:
+    :return:
+    '''
     connection.close()
 
 def get_value_list(cursor, table, index=None):
@@ -26,32 +37,31 @@ def get_value_list(cursor, table, index=None):
     :param index:
     :return:
     '''
+    try:
+        cursor.execute("SELECT * FROM " + table)
+        db_list = cursor.fetchall()
 
-    cursor.execute("SELECT * FROM " + table)
-    db_list = cursor.fetchall()
+    except mysql.connector.Error as err:
+        print("Stuff went south: {}".format(err))
 
     if index != None:
         value_list = []
-
         for i in db_list:
             value_list.append(i[index])
-
         return value_list
-    return(db_list)
 
+    return (db_list)
 
 def add_value(conn, cursor, table, values):
     """
     Insert values into table, with the values inserted being arrays
     """
-
     SPACE_HOLDER = "%s,"
     sql = "INSERT INTO " + table + " VALUES(" + SPACE_HOLDER*(len(values) - 1 ) + "%s" + ")"
-
     cursor.execute(sql, values)
     conn.commit()
 
-def delete_value(conn, cursor, table, column='', condition=''):
+def delete(conn, cursor, table, column=None, condition=None):
     """
     Delete Stuff
     :param conn:
@@ -61,11 +71,15 @@ def delete_value(conn, cursor, table, column='', condition=''):
     :param where:
     :return:
     """
-
-    sql = "DELETE FROM " + table + " WHERE " + column + '="' + condition +'"'
-
-    cursor.execute(sql)
-    conn.commit()
+    if column != None:
+        sql = "DELETE FROM " + table + " WHERE " + str(column) + '="' + str(condition) + '"'
+    else:
+        sql = "DELETE FROM " + table
+    try:
+        cursor.execute(sql)
+        conn.commit()
+    except mysql.connector.Error as err:
+        print("Stuff went wrong:{}".format(err))
 
 if __name__ == '__main__':
 
@@ -75,24 +89,6 @@ if __name__ == '__main__':
     schema = 'Test_schema'
 
     connection, curr = connect(user_host, user_login, password, schema)
-    #
-    #
-    # sql = "INSERT INTO Tutor (TutorID, Email, Name) VALUES(" + SPACE_HOLDER * 2 +"%s" +")"
-    # print(sql)
-    # val = ('T5', "dsdf", "Yong wan")
-    # curr.execute(sql, val)
-    # connection.commit()
-    #
-    #
-    # get_value_list(curr, "Tutor",  1)
-    #
-    # end_connection(connection)
 
-    # add_value(connection, curr, "Tutor", values = ('T6', "dsdf", "Yong wan"))
-    # print(get_value_list(curr, "Tutor"))
-    # delete_value(connection, curr, "Tutor", "TutorID", "T6")
-    # print(get_value_list(curr, "Tutor"))
-
-    print(select_certain_value(curr, "AnswerTutor", "Answers", "Friday"))
-
+    get_value_list(curr, "Tutor", 5)
     end_connection(connection)

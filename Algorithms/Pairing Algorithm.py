@@ -1,53 +1,59 @@
 ### Paring algorithm, I need to do this in 3 hours esketit
-
-
 ## Standard Library Immports
 import sys
 sys.path.append("Imported")
 import Connector as cn
+from Email import send_multiple
 
-def dd_array(col,row):
-    """
-    Returns a 2d array with specifics dimensions.
-    :param width:
-    :param length:
-    :return:
-    """
+def max_index(matrix):
+    max = -1
+    for value in matrix:
+        cur = value[2]
+        if cur > max:
+            max = cur
+    return(max)
 
-    empty = [None]
-    array = [empty*row] * col
-    return(array)
+def in_matrix(matrix, input_value):
+    for row in matrix:
+        for col in row:
+            if input_value == col:
+                return True
+    return False
 
+def amount_matrix(matrix, input_value):
+    value_occur = 0
+    for row in matrix:
+        for col in row:
+            if input_value == col:
+                value_occur += 1
+    return value_occur
 
-def person_info_list(cursor, table, QuestionID, freeday, PersonID):
+def person_info_list(cursor, table, questionID, personID):
     """
     ("SELECT " + return_value + " From " + table + " Where " + column + " " + condition + ' "' + equal_to + '"' )
     :param array:
     :return:
     """
-    sql = ("SELECT " + PersonID + " From " + table + " Where QuestionID=" + QuestionID + " and " \
-           "Answers='" + freeday +"'")
+
+    sql = ("SELECT " + personID + " From " + table + " Where QuestionID=" + questionID + " and " \
+           "Answers='Yes'")
 
     cursor.execute(sql)
     db_list = cursor.fetchall()
 
-    sql_get_info = ("SELECT " + PersonID+ ",QuestionID, Answers From " + table + " where QuestionID != 1 and " +\
-                    PersonID + "='")
+    #Get PersonID where it corresponds to the day of the week that they are free in
 
+    sql_get_info = ("SELECT " + personID + ", Answers From " + table +
+                    " where QuestionID NOT IN (1,2,3,4,5) and " + personID + "='")
     information_list = []
 
     for value in db_list:
-        tutorID = value[0] # relies on the database outlined
-
-        cursor.execute(sql_get_info + tutorID + "'")
-
-        fetchall = cursor.fetchall()
-
-        data_value = [tutorID]
+        id = value[0] # relies on the database outlined
+        cursor.execute(sql_get_info + id + "'")
+        fetchall = cursor.fetchall() # More questions means large 2d array
+        data_value = [id]
         for row in fetchall:
-
-            data_value.append(row[2])
-
+            data_value.append(row[1])
         information_list.append(data_value)
 
     return information_list
@@ -60,21 +66,23 @@ def compatibility(tutor_matrix, student_matrix):
     :param student_matrix:
     :return:
     '''
-
     tutor_student_list = []
 
     for tutor in tutor_matrix:
-        """
-        Looping through the tutor list
-        """
+    #Looping through tutor List
         tutorID = tutor[0]
-        score = 0 # score indicates the compatibility with the student
+    # score indicates the compatibility with the student
 
         for student in student_matrix:
+
+            score = 0
             studentID = student[0]
-            for index in range(1, len(student)):
+            length_student = len(student)
+
+            for index in range(1, length_student):
+                score_add = (length_student - index)
                 if student[index] == tutor[index]:
-                    score += 1
+                    score += score_add
 
             compatibility_list =  [tutorID, studentID, score]
             tutor_student_list.append(compatibility_list)
@@ -82,19 +90,48 @@ def compatibility(tutor_matrix, student_matrix):
     return (tutor_student_list)
 
 def add_data(conn, cursor, table, input_list):
-
+    '''
+    Insert values into a table
+    :param conn:
+    :param cursor:
+    :param table:
+    :param input_list:
+    :return:
+    '''
     for value_list in input_list:
         cn.add_value(conn, cursor, table, value_list)
 
-def matching():
+def matching(conn, cursor, tutor_table, student_table, score_table, freedayID, tutorID, studentID):
+    '''
     '''
 
-    '''
+    tutor_freetime = person_info_list(cursor, tutor_table, freedayID, tutorID)
+    student_freetime = person_info_list(cursor, student_table, freedayID, studentID)
+    pairing = compatibility((tutor_freetime), (student_freetime))
 
+    add_data(conn, cursor, score_table, pairing)
+
+    try:
+        max_student = (len(tutor_freetime)/len(student_freetime)) + 1
+    except:
+        max_student = 1
+
+    max_pair = max_index(pairing)
+    student_teacher_pair = []
+
+    for value in range(max_pair, -1, -1):
+        for pair in pairing:
+            if (pair[2] == value) and not(in_matrix(student_teacher_pair, pair[1])):
+                if amount_matrix(student_teacher_pair, pair[0]) < max_student:
+                    student_teacher_pair.append([pair[0], pair[1], freedayID])
+
+    return(student_teacher_pair)
+
+def send_email():
+    print("")
 
 if __name__ == "__main__":
 
-    SPACE_HOLDER = "%s,"
     user_host = 'localhost'
     user_login = 'root'
     password = 'razzmatazz'
@@ -102,23 +139,7 @@ if __name__ == "__main__":
 
     conn, curr = cn.connect(user_host, user_login, password, schema)
 
-    tutor_freetime = person_info_list(curr, "AnswerTutor", "1", "Thursday", "TutorID")
-    student_freetime = person_info_list(curr, "AnswerStudent", "1", "Thursday", "StudentID")
+    final_matching = matching(conn, curr, "AnswerTutor", "AnswerStudent", "Matching", "5", "TutorID", "StudentID" )
 
-
-    pairing = compatibility((tutor_freetime), (student_freetime))
-
-    add_data(conn, curr, "Matching", pairing)
-
-    print(cn.get_value_list(curr, "Matching"))
-
-
-    # curr.execute("Delete from matching")
-    # conn.commit()
-
-'''
-If you are presenting on a different platform, it must be one application
-Shw database on school server
-Succes Crit = script
-Make Slider
-'''
+    cn.delete(conn, curr, "schedule")
+    cn.delete(conn, curr, "Matching")

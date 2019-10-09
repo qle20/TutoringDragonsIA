@@ -1,51 +1,45 @@
 
-## Standard Library Immports
+# Standard Library Immports
 import os
 import sys
 
-## Third party imports
+# Third party imports
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
 import smtplib
 
-## Local application imports
-
+# Local application imports
 sys.path.append("Imported")
 import Connector as cn
 
-
-def send_email(sender, password, send_to, message, error_list=''):
+def send_email(sender, password, send_to, message):
     '''
     This function only works with the an email address
     that has enable 3rd party connection. To do so...
      '''
     try:
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
-
             server.login(sender, password)
-
             server.sendmail(sender, send_to, message)
-
             server.quit()
     except:
-        error_list.append(send_to)
+        error = send_to
+        return error
 
-        return error_list
-
-def make_single_email(sender, password, send_to, subject, msg, error_list = 'NO LIST'):
+def make_single_email(sender, password, send_to, subject, msg):
     '''
     Make message, where the subject, the message  has to be parsed.
     :return: The message as a string.
     '''
     message = f"Subject: {subject}\n\n{msg}"
+    error_value = send_email(sender, password, send_to, message)
+    if error_value == "NO_LIST":
+        return None
+    return error_value
 
-    send_email(sender, password, send_to, message )
-
-    return error_list
-
-def send_attachment(file_location, sender, password, send_to, subject, message, error_list = 'NO LIST'):
+def send_attachment(file_location, sender, password, send_to, subject, message):
     '''
     Low Key stole from some guy
     '''
@@ -55,9 +49,9 @@ def send_attachment(file_location, sender, password, send_to, subject, message, 
     msg['Subject'] = subject
 
     msg.attach(MIMEText(message, 'plain'))
-
     filename = os.path.basename(file_location)
     attachment = open(file_location, "rb")
+
     part = MIMEBase('application', 'octet-stream')
     part.set_payload(attachment.read())
     encoders.encode_base64(part)
@@ -67,9 +61,10 @@ def send_attachment(file_location, sender, password, send_to, subject, message, 
     msg.attach(part)
     text = msg.as_string()
 
-    send_email(sender, password, send_to, text)
-
-    return error_list
+    error_value = send_email(sender, password, send_to, text)
+    if error_value == "NO LIST":
+        return None
+    return error_value
 
 def send_multiple(sender, password, email_list, subject, message, file_location=None):
     '''
@@ -86,29 +81,35 @@ def send_multiple(sender, password, email_list, subject, message, file_location=
 
     if file_location == None:
         for email in email_list:
-            make_single_email(sender, password, email, subject, )
-
+            error_value = make_single_email(sender, password, email, subject )
+            if error_value != "NO LIST":
+                error_list.append(error_value)
     else:
         for email in email_list:
-            send_attachment(file_location, sender, password, email, subject, message)
+            error_value = send_attachment(file_location, sender, password, email, subject, message)
+            if error_value != "NO LIST":
+                error_list.append(error_value)
+
+    return error_list
+
 
 if __name__ == "__main__":
 
     ## initialize
-    file_location = 'Test.rtf'
+    file_location = '/Users/lequocanh/Documents/GitHub/TutoringDragonsIA/Algorithms/Imported/text.txt'
     user_host = 'localhost'
     user_login = 'root'
     password = 'razzmatazz'
     schema = 'Test_schema'
     subject = "Nani"
     message = '''
-    I love jaden
-    '''
+     I love jaden
+     '''
 
     email_address = os.environ.get("DB_USER")
     email_pass = os.environ.get("DB_PASS")
 
     ## Accessing database for emails to send to people
     connection, curr = cn.connect(user_host, user_login, password, schema)
-    email_list = cn.get_value_list(curr, "Tutor", 1)
+    email_list = cn.get_value_list(curr, "Student", 1)
     error = send_multiple(email_address, email_pass, email_list, subject, message, file_location)
