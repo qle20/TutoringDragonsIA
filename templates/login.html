@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
@@ -7,17 +8,18 @@
 
 <body>
     <link href="/static/StyleSheet.css" rel="stylesheet" type="text/css">
-        <div class="container form_login">
-            <h2>Login Form</h2>
-            <form enctype="multipart/form-data" id="login_form" name="login_form" action="" method="post">
-                <div class="container">
-                    <label for="uname"><b>Username</b></label>
-                    <input type="text" placeholder="Enter Username" name="username" id="username" required>
-                    <button type="submit">Login</button>
-                </div>
-            </form>
-        </div>
+    <div class="container form_login">
+        <h2>Login Form</h2>
+        <form enctype="multipart/form-data" id="login_form" name="login_form" action="" method="post">
+            <div class="container">
+                <label for="uname"><b>Username</b></label>
+                <input type="text" placeholder="Enter Username" name="username" id="username" required>
+                <button type="submit">Login</button>
+            </div>
+        </form>
+    </div>
 </body>
+
 </html>
 
 <script type="text/javascript">
@@ -33,7 +35,7 @@
                 success: function(response) { // Go through appliction if does ork then prints
                     console.log(response);
                     data = JSON.parse(response);
-                    if(data.status == "OK")
+                    if (data.status == "OK") {
                         window.location.pathname = "/main/question"
 
                     }

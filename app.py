@@ -15,9 +15,15 @@ password = 'razzmatazz'
 schema = 'Test_schema'
 
 @app.route('/')
-def index():
-    if not session.get("logged_in"):
-        return render_template('index.html')
+def home():
+    if not session.get('logged_in'):
+        return render_template('login.html')
+    else:
+        connection, curr = cn.connect(user_host, user_login, password, schema)
+        value = cn.get_value_list(curr, "Questions Order by QuestionID")
+        cn.end_connection(connection)
+        print(username)
+        return render_template('/Main/question.html', data=value[0][1])
 
 @app.route('/login_request', methods=["POST"])
 def login_request():
@@ -27,18 +33,18 @@ def login_request():
     student_value = cn.get_value_list(curr, "Student", 1)
     cn.end_connection(connection)
     final_value = tutor_value + student_value
-
+    print username
     if username in final_value:
-        return json.dumps({'status': 'OK', 'user': username})
-    return json.dumps({'status': 'fail', 'user': username})
+        return home(username)
+    return json.dumps({'status': 'OK', 'user': username})
 
 @app.route('/main/question')
-def question(username):
-    connection, curr = cn.connect(user_host, user_login, password, schema)
-    value = cn.get_value_list(curr, "Questions Order by QuestionID")
-    cn.end_connection(connection)
+def question():
+    # connection, curr = cn.connect(user_host, user_login, password, schema)
+    # value = cn.get_value_list(curr, "Questions Order by QuestionID")
+    # cn.end_connection(connection)
 
-    print(username)
+    # print(username)
     return render_template('/Main/question.html', data=value[0][1]);
 
 @app.route('/main/admin')
