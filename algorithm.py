@@ -2,13 +2,13 @@
 ## Standard Library Immports
 import sys
 sys.path.append("Imported")
-import Connector as cn
-from Email import send_multiple
+from Imported import Connector as cn
 
-def max_index(matrix):
+
+def max_index(matrix, index):
     max = -1
     for value in matrix:
-        cur = value[2]
+        cur = value[index]
         if cur > max:
             max = cur
     return(max)
@@ -89,34 +89,26 @@ def compatibility(tutor_matrix, student_matrix):
 
     return (tutor_student_list)
 
-def add_data(conn, cursor, table, input_list):
+def matching(conn, cursor, tutor_table, student_table, score_table, freedayID, tutorID, studentID, final_table):
     '''
-    Insert values into a table
-    :param conn:
-    :param cursor:
-    :param table:
-    :param input_list:
-    :return:
+    Fix this crap
     '''
-    for value_list in input_list:
-        cn.add_value(conn, cursor, table, value_list)
-
-def matching(conn, cursor, tutor_table, student_table, score_table, freedayID, tutorID, studentID):
-    '''
-    '''
+    cn.delete(conn, cursor, score_table)
+    cn.delete(conn, cursor, final_table)
 
     tutor_freetime = person_info_list(cursor, tutor_table, freedayID, tutorID)
     student_freetime = person_info_list(cursor, student_table, freedayID, studentID)
     pairing = compatibility((tutor_freetime), (student_freetime))
 
-    add_data(conn, cursor, score_table, pairing)
+    for value_list in pairing:
+        cn.add_value(conn, cursor, score_table, value_list)
 
     try:
         max_student = (len(tutor_freetime)/len(student_freetime)) + 1
     except:
         max_student = 1
 
-    max_pair = max_index(pairing)
+    max_pair = max_index(pairing, 2)
     student_teacher_pair = []
 
     for value in range(max_pair, -1, -1):
@@ -125,10 +117,15 @@ def matching(conn, cursor, tutor_table, student_table, score_table, freedayID, t
                 if amount_matrix(student_teacher_pair, pair[0]) < max_student:
                     student_teacher_pair.append([pair[0], pair[1], freedayID])
 
-    return(student_teacher_pair)
+    for day_values in student_teacher_pair:
+        cn.add_value(conn, cursor, final_table, day_values)
 
-def send_email():
-    print("")
+def send_email_matching(cursor, matching, sender, password, subject, message):
+
+    value_list = cn.get_value_list(cursor, matching)
+    print(value_list)
+    #error_list = send_multiple(sender, password, email_list, subject, message)
+
 
 if __name__ == "__main__":
 
@@ -137,9 +134,11 @@ if __name__ == "__main__":
     password = 'razzmatazz'
     schema = 'Test_schema'
 
+
     conn, curr = cn.connect(user_host, user_login, password, schema)
-
-    final_matching = matching(conn, curr, "AnswerTutor", "AnswerStudent", "Matching", "5", "TutorID", "StudentID" )
-
     cn.delete(conn, curr, "schedule")
     cn.delete(conn, curr, "Matching")
+    matching(conn, curr, "AnswerTutor", "AnswerStudent", "Matching", "5", "TutorID", "StudentID","schedule")
+
+
+

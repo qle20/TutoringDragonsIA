@@ -12,7 +12,8 @@ import smtplib
 
 # Local application imports
 sys.path.append("Imported")
-import Connector as cn
+from Imported import Connector as cn
+
 
 def send_email(sender, password, send_to, message):
     '''
@@ -68,20 +69,13 @@ def send_attachment(file_location, sender, password, send_to, subject, message):
 
 def send_multiple(sender, password, email_list, subject, message, file_location=None):
     '''
-    :param sender:
-    :param password:
-    :param email_list:
-    :param subject:
-    :param message:
-    :param file_location:
-    :return:
-    '''
 
+    '''
     error_list = []
 
     if file_location == None:
         for email in email_list:
-            error_value = make_single_email(sender, password, email, subject )
+            error_value = make_single_email(sender, password, email, subject, message )
             if error_value != "NO LIST":
                 error_list.append(error_value)
     else:
@@ -103,7 +97,7 @@ if __name__ == "__main__":
     schema = 'Test_schema'
     subject = "Nani"
     message = '''
-     I love jaden
+     I love CS
      '''
 
     email_address = os.environ.get("DB_USER")
@@ -112,4 +106,4 @@ if __name__ == "__main__":
     ## Accessing database for emails to send to people
     connection, curr = cn.connect(user_host, user_login, password, schema)
     email_list = cn.get_value_list(curr, "Student", 1)
-    error = send_multiple(email_address, email_pass, email_list, subject, message, file_location)
+    error = send_multiple(email_address, email_pass, email_list, subject, message)

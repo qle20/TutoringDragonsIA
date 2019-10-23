@@ -40,17 +40,18 @@ def get_value_list(cursor, table, index=None):
     try:
         cursor.execute("SELECT * FROM " + table)
         db_list = cursor.fetchall()
+        length_list_index = len(db_list[0]) - 1
+        if (db_list != [] and index != None) and length_list_index >= index:
+            value_list = []
+            for i in db_list:
+                value_list.append(i[index])
+            return value_list
+        else:
+            return (db_list)
 
     except mysql.connector.Error as err:
         print("Stuff went south: {}".format(err))
 
-    if index != None:
-        value_list = []
-        for i in db_list:
-            value_list.append(i[index])
-        return value_list
-
-    return (db_list)
 
 def add_value(conn, cursor, table, values):
     """
@@ -58,18 +59,14 @@ def add_value(conn, cursor, table, values):
     """
     SPACE_HOLDER = "%s,"
     sql = "INSERT INTO " + table + " VALUES(" + SPACE_HOLDER*(len(values) - 1 ) + "%s" + ")"
-    cursor.execute(sql, values)
-    conn.commit()
+    try:
+        cursor.execute(sql, values)
+        conn.commit()
+    except mysql.connector.Error as err:
+        print("Stuff went south: {}".format(err))
 
 def delete(conn, cursor, table, column=None, condition=None):
     """
-    Delete Stuff
-    :param conn:
-    :param cursor:
-    :param table:
-    :param coloum:
-    :param where:
-    :return:
     """
     if column != None:
         sql = "DELETE FROM " + table + " WHERE " + str(column) + '="' + str(condition) + '"'
@@ -81,6 +78,22 @@ def delete(conn, cursor, table, column=None, condition=None):
     except mysql.connector.Error as err:
         print("Stuff went wrong:{}".format(err))
 
+def convert(question_list):
+
+    for question_index in range(len(question_list)):
+        question_list[question_index] = list(question_list[question_index])
+        if question_list[question_index][2] == 2:
+            question_list[question_index][3] = question_list[question_index][3].split(",")
+    return question_list
+
+def combine(list, index):
+
+    new_list = []
+    for value in list:
+        new_list.append(value[index])
+
+    return(new_list)
+
 if __name__ == '__main__':
 
     user_host = 'localhost'
@@ -89,6 +102,8 @@ if __name__ == '__main__':
     schema = 'Test_schema'
 
     connection, curr = connect(user_host, user_login, password, schema)
+    question_list = get_value_list(curr, "Questions Order By QuestionID")
 
-    get_value_list(curr, "Tutor", 5)
+    convert(question_list)
+
     end_connection(connection)
