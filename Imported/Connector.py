@@ -1,14 +1,6 @@
 import mysql.connector
 
 def connect(user_host, user_login, password, db):
-    '''
-    Connects to a database with the parameters given.
-    :param user_host:
-    :param user_login:
-    :param password:
-    :param db:
-    :return:
-    '''
     try:
         connection = mysql.connector.connect(
             host=str(user_host),
@@ -23,20 +15,9 @@ def connect(user_host, user_login, password, db):
         print("Stuff went south: {}".format(err))
 
 def end_connection(connection):
-    '''
-    :param connection:
-    :return:
-    '''
     connection.close()
 
 def get_value_list(cursor, table, index=None):
-    '''
-    This function collects a certain value in a specified table, returns it as a list.
-    :param cursor:
-    :param table:
-    :param index:
-    :return:
-    '''
     try:
         cursor.execute("SELECT * FROM " + table)
         db_list = cursor.fetchall()
@@ -54,9 +35,6 @@ def get_value_list(cursor, table, index=None):
 
 
 def add_value(conn, cursor, table, values):
-    """
-    Insert values into table, with the values inserted being arrays
-    """
     SPACE_HOLDER = "%s,"
     sql = "INSERT INTO " + table + " VALUES(" + SPACE_HOLDER*(len(values) - 1 ) + "%s" + ")"
     try:
@@ -66,8 +44,6 @@ def add_value(conn, cursor, table, values):
         print("Stuff went south: {}".format(err))
 
 def delete(conn, cursor, table, column=None, condition=None):
-    """
-    """
     if column != None:
         sql = "DELETE FROM " + table + " WHERE " + str(column) + '="' + str(condition) + '"'
     else:
@@ -94,6 +70,11 @@ def combine(list, index):
 
     return(new_list)
 
+def select_where(cursor, sql):
+    cursor.execute(sql)
+    return(cursor.fetchall())
+
+
 if __name__ == '__main__':
 
     user_host = 'localhost'
@@ -104,6 +85,7 @@ if __name__ == '__main__':
     connection, curr = connect(user_host, user_login, password, schema)
     question_list = get_value_list(curr, "Questions Order By QuestionID")
 
+    add_value(connection, curr, "Tutor", ("T3", "sadf", "asdfa"))
     convert(question_list)
 
     end_connection(connection)

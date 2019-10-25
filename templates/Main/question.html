@@ -9,7 +9,8 @@
 </h1>
 <body>
     <div>
-        <form name="submit_question" id = "submit_question" action="/question" method="POST"><br>
+        <form name="submit_question" id = "submit_question" action="{{url_for('get_question')}}" method="POST">
+            <p> Days Free</p>
             {% for question in range(0, toPass|length) %}
                 {% if toPass[question][2] == 1 %}
                     <input type="checkbox" name={{toPass[question][0]}} value="1"> {{ toPass[question][1] }}
@@ -19,13 +20,12 @@
                     {% for value in toPass[question][3] %}
                      <input type="radio" name={{toPass[question][0]}} value={{value}} required>{{value}}<br>
                     {% endfor %}
+                    <input type="radio" name={{toPass[question][0]}} value="No Preference">No Preference<br>
                 {% endif %}
             {% endfor %}<br>
-            <button type="submit">Submit Button
+            <button type="submit">Submit Button</button>
         </form>
     </div>
-</body>
-
 </body>
 </html>
 

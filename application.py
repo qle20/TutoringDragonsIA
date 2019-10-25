@@ -3,7 +3,6 @@ import os
 
 from Imported import Connector as cn
 from content_management import content
-from algorithm import matching
 
 TOPIC_DICT = content()
 app = Flask(__name__)
@@ -11,7 +10,6 @@ user_host = 'localhost'
 user_login = 'root'
 password = 'razzmatazz'
 schema = 'Test_schema'
-
 
 @app.route('/')
 def homepage():
@@ -53,13 +51,29 @@ def login_request():
 
 @app.route('/question', methods=["POST"])
 def get_question():
-
     if request.method == "POST":
+
         result = request.form
+        print(result)
+        print(session['username'])
         for question in result:
             print(result[question])
         return render_template("/Main/result.html", result = result)
 
+@app.route('/signup', methods=["POST"])
+def sign_up():
+    session['logged_in'] = False
+    return render_template("/signup.html")
+
+# @app.route('app_cancel', methods=["POST"])
+# def cancell
+#
+# # @app.route('/addusername', methods=["POST"])
+# # def add_username():
+# #     if request.method == "POST":
+# #         if
+# #         result = request.form
+# #         print(result)
 
 if __name__ == "__main__":
     connection, curr = cn.connect(user_host, user_login, password, schema)

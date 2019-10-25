@@ -3,7 +3,8 @@
 import sys
 sys.path.append("Imported")
 from Imported import Connector as cn
-
+from Imported import Email as e
+import os
 
 def max_index(matrix, index):
     max = -1
@@ -120,12 +121,56 @@ def matching(conn, cursor, tutor_table, student_table, score_table, freedayID, t
     for day_values in student_teacher_pair:
         cn.add_value(conn, cursor, final_table, day_values)
 
-def send_email_matching(cursor, matching, sender, password, subject, message):
+def send_email_matching(cursor, matching, sender, password):
 
     value_list = cn.get_value_list(cursor, matching)
-    print(value_list)
-    #error_list = send_multiple(sender, password, email_list, subject, message)
 
+    tutor_list = []
+    student_list = []
+    freeday_list = []
+
+    for value in value_list:
+        tutor_list.append(value[0])
+        student_list.append(value[1])
+        freeday_list.append(value[2])
+
+    tutor_tuple = tuple(tutor_list)
+    student_tuple = tuple(student_list)
+    freeday_tuple = tuple(freeday_list)
+
+    sql_tutor = ("Select Email, TutorID from Tutor where TutorID IN{}").format(tutor_tuple)
+    tutor_email_list = cn.select_where(cursor, sql_tutor)
+
+    sql_student = ("Select Email, StudentID from Student where StudentID IN{}").format(student_tuple)
+    student_email_list = cn.select_where(cursor, sql_student)
+
+    sql_freeday = ("Select freeday, FreedayID from freeday where freedayID IN{}").format(freeday_tuple)
+    freeday_list = cn.select_where(cursor, sql_freeday)
+
+    send_email_pair(value_list, tutor_email_list, student_email_list, freeday_list, sender, password)
+
+def send_email_pair(value_list, tutor_email_list, student_email_list, freeday_list, sender, password):
+
+    error_list = []
+    for value in value_list:
+        for tutor in tutor_email_list:
+            if tutor[1] == value[0]:
+                tutor_email = tutor[0]
+        for student in student_email_list:
+            if student[1] == value[1]:
+                student_email = student[0]
+        for freeday in freeday_list:
+            if freeday[1] == value[2]:
+                freeday_pair = freeday[0]
+
+        pairing_list = [tutor_email, student_email]
+        subject = "Pairing"
+        message = tutor_email, student_email, freeday_pair
+
+        error = e.send_multiple(sender, password, pairing_list, subject, message)
+        error_list.append(error)
+
+    return
 
 if __name__ == "__main__":
 
@@ -134,11 +179,21 @@ if __name__ == "__main__":
     password = 'razzmatazz'
     schema = 'Test_schema'
 
+    user_host = 'localhost'
+    user_login = 'root'
+    password = 'razzmatazz'
+    schema = 'Test_schema'
+    subject = "Nani"
+    message = '''
+     I love CS
+     '''
+
+    email_address = os.environ.get("DB_USER")
+    email_pass = os.environ.get("DB_PASS")
 
     conn, curr = cn.connect(user_host, user_login, password, schema)
     cn.delete(conn, curr, "schedule")
     cn.delete(conn, curr, "Matching")
     matching(conn, curr, "AnswerTutor", "AnswerStudent", "Matching", "5", "TutorID", "StudentID","schedule")
-
-
+    send_email_matching(curr, "schedule", email_address, email_pass)
 
