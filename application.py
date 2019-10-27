@@ -3,9 +3,16 @@ import os
 
 from Imported import Connector as cn
 from content_management import content
+from algorithm import matching, send_email_matching
+
 
 TOPIC_DICT = content()
 app = Flask(__name__)
+# user_host = 'srvr-ustudentlab.ssis.edu.vn'
+# user_login = 'qle20'
+# password = 'ssis12345!'
+# schema = 'qle20'
+
 user_host = 'localhost'
 user_login = 'root'
 password = 'razzmatazz'
@@ -39,31 +46,102 @@ def login_request():
     username_list = cn.combine(final_value, 1)
     username = request.form['username']
 
-    if (username in username_list) or (username == 'admin'):
+    if username == "admin":
+        session["logged_in"] = True
+        session['username'] = "admin"
+        return homepage()
+    if username in username_list:
         session['logged_in'] = True
-        login = final_value[username.index(username)]
+        login = final_value[username_list.index(username)]
+        print(login)
         session['username'] = login
+        session['username'] = login
+        print(session['username'])
         return homepage()
     else:
         error = 'Invalid Credentials, Please try again'
         connection.close()
         return render_template('login.html', error = error)
 
-@app.route('/question', methods=["POST"])
-def get_question():
-    if request.method == "POST":
+@app.route('/question/<user>', methods=["POST"])
+def get_question(user):
 
+    if request.method == "POST":
+        connection,curr = cn.connect(user_host, user_login, password, schema)
         result = request.form
-        print(result)
-        print(session['username'])
+        index = 0
+        if "T" in (session["username"])[0] :
+            table = "AnswerTutor"
+            tableid = "TutorID"
+        else:
+            table = "AnswerStudent"
+            tableid = "StudentID"
+        cn.delete(connection, curr, table, tableid, session["username"][0])
+
         for question in result:
-            print(result[question])
-        return render_template("/Main/result.html", result = result)
+            index += 1
+            values = [index, session["username"][0], result[question]]
+            cn.add_value(connection, curr, table, values)
+        connection.close()
+
+        return render_template("/Main/result.html", result = result,  name = session["username"][2])
 
 @app.route('/signup', methods=["POST"])
 def sign_up():
     session['logged_in'] = False
     return render_template("/signup.html")
+
+@app.route('/admin', methods=["POST"])
+def admin():
+    if request.method == "POST":
+        result = request.form
+        connection, curr = cn.connect(user_host, user_login, password, schema)
+        for value in result:
+            if str(value) == "matching":
+                if result[value] == "Yes":
+                    for i in range(0 , 5):
+                        try:
+                            matching(connection,
+                                     curr,
+                                     "AnswerTutor",
+                                     "AnswerStudent",
+                                     "Matching",
+                                     str(i),
+                                     "TutorID",
+                                     "StudentID",
+                                     "schedule")
+                        except:
+                            print("Hello")
+                error = "Successfully matched"
+                return render_template("/Main/admin.html", error=result)
+
+            if str(value) == "email":
+                if result[value] == "Yes":
+                    result = send_email_matching(curr, "schedule", email_address, email_pass)
+                    return render_template("/Main/admin.html", error= result )
+
+
+@app.route("/display_database", methods=["POST"])
+def display():
+    if request.method == "POST":
+        database = request.form["database"]
+        if database == "Yes":
+            connection, curr = cn.connect(user_host, user_login, password, schema)
+            answerStudent = cn.get_value_list(curr, "AnswerStudent")
+            answerTutor = cn.get_value_list(curr, "AnswerTutor")
+            tutor = cn.get_value_list(curr, "Tutor")
+            student = cn.get_value_list(curr, "Student")
+            matching = cn.get_value_list(curr, "matching")
+            connection.close()
+            return render_template("/Main/DisplayDatabase.html",
+                                   database="Yes",
+                                   answerStudent=answerStudent,
+                                   answerTutor=answerTutor,
+                                   tutor=tutor,
+                                   student=student,
+                                   matching=matching)
+
+
 
 # @app.route('app_cancel', methods=["POST"])
 # def cancell
@@ -76,10 +154,8 @@ def sign_up():
 # #         print(result)
 
 if __name__ == "__main__":
-    connection, curr = cn.connect(user_host, user_login, password, schema)
-    cn.delete(connection, curr, "schedule")
-    cn.delete(connection, curr, "Matching")
-    connection.close()
+    email_address = os.environ.get("DB_USER")
+    email_pass = os.environ.get("DB_PASS")
 
     app.secret_key = os.urandom(12)
     app.run(debug=False)

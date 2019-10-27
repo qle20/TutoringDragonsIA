@@ -9,12 +9,12 @@
 </h1>
 <body>
     <div>
-        <form name="submit_question" id = "submit_question" action="{{url_for('get_question')}}" method="POST">
+        <form name="submit_question" id = "submit_question" action="{{url_for('get_question', user=username[0])}}" method="POST">
             <p> Days Free</p>
             {% for question in range(0, toPass|length) %}
                 {% if toPass[question][2] == 1 %}
-                    <input type="checkbox" name={{toPass[question][0]}} value="1"> {{ toPass[question][1] }}
-                    <input type="hidden" name="{{toPass[question][0]}}" value="0"><br>
+                    <input type="checkbox" name={{toPass[question][0]}} value="Yes"> {{ toPass[question][1] }}
+                    <input type="hidden" name="{{toPass[question][0]}}" value="No"><br>
                 {% elif toPass[question][2] == 2%}
                     <p>{{ toPass[question][1] }}</p>
                     {% for value in toPass[question][3] %}

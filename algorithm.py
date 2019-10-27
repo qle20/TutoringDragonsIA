@@ -85,7 +85,7 @@ def compatibility(tutor_matrix, student_matrix):
                 if student[index] == tutor[index]:
                     score += score_add
 
-            compatibility_list =  [tutorID, studentID, score]
+            compatibility_list = [tutorID, studentID, score]
             tutor_student_list.append(compatibility_list)
 
     return (tutor_student_list)
@@ -94,7 +94,8 @@ def matching(conn, cursor, tutor_table, student_table, score_table, freedayID, t
     '''
     Fix this crap
     '''
-    cn.delete(conn, cursor, score_table)
+
+    cn.delete(conn, curr, score_table)
     cn.delete(conn, cursor, final_table)
 
     tutor_freetime = person_info_list(cursor, tutor_table, freedayID, tutorID)
@@ -123,8 +124,11 @@ def matching(conn, cursor, tutor_table, student_table, score_table, freedayID, t
 
 def send_email_matching(cursor, matching, sender, password):
 
-    value_list = cn.get_value_list(cursor, matching)
 
+    value_list = cn.get_value_list(cursor, matching)
+    error_list = []
+
+    print(value_list)
     tutor_list = []
     student_list = []
     freeday_list = []
@@ -147,7 +151,7 @@ def send_email_matching(cursor, matching, sender, password):
     sql_freeday = ("Select freeday, FreedayID from freeday where freedayID IN{}").format(freeday_tuple)
     freeday_list = cn.select_where(cursor, sql_freeday)
 
-    send_email_pair(value_list, tutor_email_list, student_email_list, freeday_list, sender, password)
+    error_list.append(send_email_pair(value_list, tutor_email_list, student_email_list, freeday_list, sender, password))
 
 def send_email_pair(value_list, tutor_email_list, student_email_list, freeday_list, sender, password):
 
@@ -169,8 +173,8 @@ def send_email_pair(value_list, tutor_email_list, student_email_list, freeday_li
 
         error = e.send_multiple(sender, password, pairing_list, subject, message)
         error_list.append(error)
-
-    return
+        print(error_list)
+    return error_list
 
 if __name__ == "__main__":
 
@@ -192,8 +196,8 @@ if __name__ == "__main__":
     email_pass = os.environ.get("DB_PASS")
 
     conn, curr = cn.connect(user_host, user_login, password, schema)
-    cn.delete(conn, curr, "schedule")
-    cn.delete(conn, curr, "Matching")
-    matching(conn, curr, "AnswerTutor", "AnswerStudent", "Matching", "5", "TutorID", "StudentID","schedule")
-    send_email_matching(curr, "schedule", email_address, email_pass)
+
+
+    matching(conn, curr, "AnswerTutor", "AnswerStudent", "Matching", "1", "TutorID", "StudentID","schedule")
+    #send_email_matching(curr, "schedule", email_address, email_pass)
 

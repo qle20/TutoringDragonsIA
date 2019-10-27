@@ -18,21 +18,24 @@ def end_connection(connection):
     connection.close()
 
 def get_value_list(cursor, table, index=None):
+
     try:
         cursor.execute("SELECT * FROM " + table)
         db_list = cursor.fetchall()
-        length_list_index = len(db_list[0]) - 1
-        if (db_list != [] and index != None) and length_list_index >= index:
-            value_list = []
-            for i in db_list:
-                value_list.append(i[index])
-            return value_list
-        else:
-            return (db_list)
+
+        if db_list != [] and index != None:
+            length_list_index = len(db_list[0]) - 1
+            if length_list_index >= index:
+                value_list = []
+                for i in db_list:
+                    value_list.append(i[index])
+                return value_list
+            else:
+                return (db_list)
+        return(db_list)
 
     except mysql.connector.Error as err:
         print("Stuff went south: {}".format(err))
-
 
 def add_value(conn, cursor, table, values):
     SPACE_HOLDER = "%s,"
@@ -45,7 +48,7 @@ def add_value(conn, cursor, table, values):
 
 def delete(conn, cursor, table, column=None, condition=None):
     if column != None:
-        sql = "DELETE FROM " + table + " WHERE " + str(column) + '="' + str(condition) + '"'
+        sql = "DELETE FROM " + table + " WHERE " + str(column) + '= "' + str(condition) + '"'
     else:
         sql = "DELETE FROM " + table
     try:
@@ -77,15 +80,19 @@ def select_where(cursor, sql):
 
 if __name__ == '__main__':
 
+    # user_host = 'srvr-ustudentlab.ssis.edu.vn'
+    # user_login = 'qle20'
+    # password = 'ssis12345!'
+    # schema = 'qle20'
+
     user_host = 'localhost'
     user_login = 'root'
     password = 'razzmatazz'
     schema = 'Test_schema'
 
     connection, curr = connect(user_host, user_login, password, schema)
-    question_list = get_value_list(curr, "Questions Order By QuestionID")
 
-    add_value(connection, curr, "Tutor", ("T3", "sadf", "asdfa"))
-    convert(question_list)
+    delete(connection, curr, "AnswerTutor", "TutorID", "T2" )
+    print(get_value_list(curr, "AnswerStudent" ))
 
-    end_connection(connection)
+    connection.close()
